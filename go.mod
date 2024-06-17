@@ -4,7 +4,7 @@ go 1.22
 
 require (
 	github.com/godbus/dbus/v5 v5.1.0
-	github.com/spf13/cobra v1.8.0
+	github.com/spf13/cobra v1.8.1
 )
 
 require (
