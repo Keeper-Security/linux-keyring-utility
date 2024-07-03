@@ -22,6 +22,7 @@ jobs:
         env:
           GOOS: linux
           GOARCH: amd64
+          CGO_ENABLED: 0
         run: |
           go build -o lku-${{ github.ref_name }}_linux_amd64
 
