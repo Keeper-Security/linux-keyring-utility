@@ -6,23 +6,22 @@ import (
 
 	"github.com/spf13/cobra"
 )
-  
 
 var rootCmd = &cobra.Command{
-	Use:   "lku",
-	Short: "KSM Keyring Utility",
-	Long: `Keyring Utility for for saving and retrieving KSM configs.`,
+	Use:   "kkru",
+	Short: "Keeper Keyring Utility",
+	Long:  `The Keeper keyring Utility manages secrets using the Linux keychain via the D-Bus Secrets API.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) == 0 {
 			cmd.Help()
-			os.Exit(0)
+			os.Exit(1)
 		}
 	},
 }
-  
+
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
+		fmt.Fprintln(rootCmd.ErrOrStderr(), err)
 		os.Exit(1)
 	}
 }
@@ -30,5 +29,5 @@ func Execute() {
 func init() {
 	rootCmd.AddCommand(setCmd)
 	rootCmd.AddCommand(getCmd)
+	rootCmd.AddCommand(delCmd)
 }
-

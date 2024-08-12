@@ -4,24 +4,30 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Keeper-Security/linux-keyring-utility/pkg/keyring"
+	secrets "github.com/Keeper-Security/linux-keyring-utility/pkg/secret_collection"
 	"github.com/spf13/cobra"
 )
 
 var setCmd = &cobra.Command{
 	Use:   "set",
-	Args:  cobra.MinimumNArgs(2),
-	Short: "Set a secret in the keyring.",
-	Long:  `Add a KSM Config to the keyring.`,
+	Args:  cobra.ExactArgs(2),
+	Short: "Set a secret in the Linux keyring.",
+	Long:  `Set the input string as a secret in the Linux keyring with the corresponding label.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		appName := args[0]
-		secret := args[1]
-		provider := keyring.SecretProvider{}
-
-		err := provider.Set(appName, secret)
+		collection, err := secrets.DefaultCollection()
 		if err != nil {
-			fmt.Println("Unable to set secret:", err)
+			fmt.Fprintf(cmd.ErrOrStderr(), "Unable to get the default keyring: %v\n", err)
 			os.Exit(1)
 		}
+		if err := collection.Unlock(); err == nil {
+			if err := collection.Set(rootCmd.Name(), args[0], []byte(args[1])); err != nil {
+				fmt.Fprintf(cmd.ErrOrStderr(), "Unable to create the secret '%s': %v\n", args[0], err)
+				os.Exit(1)
+			}
+		} else {
+			fmt.Fprintf(cmd.ErrOrStderr(), "Error unlocking the keyring: %v\n", err)
+			os.Exit(1)
+		}
+
 	},
 }
