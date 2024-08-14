@@ -7,12 +7,14 @@ import (
 	dbus "github.com/godbus/dbus/v5"
 )
 
+// SecretCollection represents a D-BUS Secrets API Collection which notably requires a Session.
 type SecretCollection struct {
 	Conn    *dbus.Conn
 	Session dbus.ObjectPath
 	Path    dbus.ObjectPath
 }
 
+// Collection returns a collection by its name.
 func Collection(name string) (*SecretCollection, error) {
 	conn, err := dbus.SessionBus()
 	if err != nil {
@@ -29,25 +31,46 @@ func Collection(name string) (*SecretCollection, error) {
 	}
 }
 
+// DefaultCollection returns the "default" collection, i.e., whatever ".../aliases/default" refers to.
 func DefaultCollection() (*SecretCollection, error) {
 	return Collection("default")
 }
 
+// Delete removes a secret from the collection
+func (sc *SecretCollection) Delete(applicationName, label string) error {
+	errorf := func(err error) error {
+		return fmt.Errorf("Unable to delete secret '%s' for application '%s' from collection '%s': %v", label, applicationName, sc.Path, err)
+	}
+	if item, err := secrets.GetItem(sc.Conn, sc.Path, sc.Session, applicationName, label); err == nil {
+		if err := secrets.DeleteItem(sc.Conn, item.Object); err == nil {
+			return nil
+		} else {
+			return errorf(err)
+		}
+	} else {
+		return errorf(err)
+	}
+}
+
+// Get retrieves a secret from the collection
 func (sc *SecretCollection) Get(applicationName, label string) ([]byte, error) {
 	if secret, err := secrets.GetItem(sc.Conn, sc.Path, sc.Session, applicationName, label); err == nil {
 		return secret.Value, nil
 	} else {
-		return nil, fmt.Errorf("Unable to retrieve the secret '%s' for application '%s' from collection '%s': %s: %v", label, applicationName, sc.Path, label, err)
+		return nil, fmt.Errorf("Unable to retrieve secret '%s' for application '%s' from collection '%s': %v", label, applicationName, sc.Path, err)
 	}
 }
 
+// Set stores a secret in the collection
 func (sc *SecretCollection) Set(applicationName, label string, data []byte) error {
-	if _, err := secrets.CreateItem(sc.Conn, sc.Path, applicationName, label, secrets.Secret(sc.Session, data)); err != nil {
-		return fmt.Errorf("Unable to create a secret in collection '%s' for application '%s' with label '%s': %v", sc.Path, applicationName, label, err)
+	if _, err := secrets.CreateItem(sc.Conn, sc.Path, sc.Session, applicationName, label, data); err != nil {
+		return fmt.Errorf("Unable to create secret in collection '%s' for application '%s' with label '%s': %v", sc.Path, applicationName, label, err)
+	} else {
+		return nil
 	}
-	return nil
 }
 
+// Unlock unlocks the collection which is required to access the secrets in it.
 func (sc *SecretCollection) Unlock() error {
 	errorf := func(err error) error {
 		return fmt.Errorf("Unable to unlock collection '%s': %v", sc.Path, err)

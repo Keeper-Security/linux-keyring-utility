@@ -7,8 +7,10 @@ import (
 const (
 	testApplication = "test-app"
 	testCollection  = "kdewallet"
-	testData        = "ewogICJ1c2VybmFtZSI6ICJteV91c2VybmFtZSIsCiAgInBhc3N3b3JkIjogIm15X3Bhc3N3b3JkIgp9Cg=="
-	testLabel       = "test-label"
+	testData        = "one thing"
+	testData2	   = "versus another"
+	testLabel       = "arbitrary-text"
+	testLabel2	  = "intentionally-different"
 )
 
 // TestNamedCollection tests the NamedCollection function.
@@ -70,6 +72,20 @@ func TestSecretCollection_Set(t *testing.T) {
 	}
 }
 
+
+func TestSecretCollection_Delete(t *testing.T) {
+	if collection, err := Collection(testCollection); err != nil {
+		t.Fatalf("Expected no error but got: %v", err)
+	} else {
+		if err := collection.Unlock(); err != nil {
+			t.Fatalf("Expected no error but got: %v", err)
+		}
+		if err := collection.Delete(testApplication, testLabel); err != nil {
+			t.Fatalf("Expected no error but got: %v", err)
+		}
+	}
+}
+
 // TestSecretCollection_Get tests the Get method of SecretCollection.
 func TestSecretCollection_Get(t *testing.T) {
 	if collection, err := Collection(testCollection); err != nil {
@@ -78,10 +94,42 @@ func TestSecretCollection_Get(t *testing.T) {
 		if err := collection.Unlock(); err != nil {
 			t.Fatalf("Expected no error but got: %v", err)
 		}
+		if err := collection.Set(testApplication, testLabel, []byte(testData)); err != nil {
+			t.Fatalf("Expected no error but got: %v", err)
+		}
+		if _, err := collection.Get(testApplication, testLabel); err != nil {
+			t.Fatalf("Expected no error but got: %v", err)
+		}
+	}
+}
+
+func TestSecretCollection_WithTwoItems(t *testing.T) {
+	if collection, err := Collection(testCollection); err != nil {
+		t.Fatalf("Expected no error but got: %v", err)
+	} else {
+		if err := collection.Unlock(); err != nil {
+			t.Fatalf("Expected no error but got: %v", err)
+		}
+		if err := collection.Set(testApplication, testLabel, []byte(testData)); err != nil {
+			t.Fatalf("Expected no error but got: %v", err)
+		}
+		if err := collection.Set(testApplication, testLabel2, []byte(testData2)); err != nil {
+			
+			t.Fatalf("Expected no error but got: %v", err)
+		}
+
 		if item, err := collection.Get(testApplication, testLabel); err != nil {
 			t.Fatalf("Expected no error but got: %v", err)
-		} else {
-			t.Log(string(item))
+			if string(item) != testData {
+				t.Fatalf("Expected %s but got %s", testData, string(item))
+			}
+		}
+
+		if item, err := collection.Get(testApplication, testLabel2); err != nil {
+			t.Fatalf("Expected no error but got: %v", err)
+			if string(item) != testData2 {
+				t.Fatalf("Expected %s but got %s", testData2, string(item))
+			}
 		}
 	}
 }

@@ -69,7 +69,7 @@ func TestT3(t *testing.T) {
 
 	Unlock(conn, []dbus.ObjectPath{collection})
 	// Add additional assertions or checks as needed
-	if _, err := CreateItem(conn, collection, testApplicationName, testSecretLabel, Secret(session, []byte(testSecretData))); err != nil {
+	if _, err := CreateItem(conn, collection, session, testApplicationName, testSecretLabel, []byte(testSecretData)); err != nil {
 		t.Fatalf("Failed to create item: %v", err)
 	}
 }
@@ -91,7 +91,7 @@ func TestT4(t *testing.T) {
 
 	Unlock(conn, []dbus.ObjectPath{collection})
 	// Add additional assertions or checks as needed
-	if _, err := CreateItem(conn, collection, testApplicationName, testSecretLabel, Secret(session, []byte(testSecretData))); err == nil {
+	if _, err := CreateItem(conn, collection, session, testApplicationName, testSecretLabel, []byte(testSecretData)); err == nil {
 		if _, err := GetItem(conn, collection, session, testApplicationName, testSecretLabel); err != nil {
 			t.Fatalf("Failed to get item: %v", err)
 		}
@@ -117,7 +117,7 @@ func TestT5(t *testing.T) {
 
 	Unlock(conn, []dbus.ObjectPath{collection})
 	// Add additional assertions or checks as needed
-	if item, err := CreateItem(conn, collection, testApplicationName, testSecretLabel, Secret(session, []byte(testSecretData))); err == nil {
+	if item, err := CreateItem(conn, collection, session, testApplicationName, testSecretLabel,[]byte(testSecretData)); err == nil {
 		if err := DeleteItem(conn, item); err != nil {
 			t.Fatalf("Failed to delete item: %v", err)
 		}

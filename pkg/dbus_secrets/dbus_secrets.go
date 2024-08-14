@@ -23,12 +23,17 @@ const (
 	unlockMethod          = "org.freedesktop.Secret.Service.Unlock"
 )
 
-// secretObject is a DBus Secret Server secret object.
-type secretObject struct {
+type dbusSecretObject struct {
 	Session     dbus.ObjectPath
 	Parameters  []byte
 	Value       []byte
 	ContentType string `dbus:"content_type"`
+}
+
+// secretObject is a DBus Secret Server secret object.
+type secretObject struct {
+	Object dbus.BusObject
+	*dbusSecretObject
 }
 
 // attributes returns a map of attributes to be attached to the secret.
@@ -42,15 +47,6 @@ func attributes(application string) map[string]string {
 // busObject returns a Secret Service specific dbus.BusObject from its path.
 func busObject(conn *dbus.Conn, path dbus.ObjectPath) dbus.BusObject {
 	return conn.Object(serviceName, path)
-}
-
-// Secret returns a secret object with the given session and secret data.
-func Secret(session dbus.ObjectPath, secretData []byte) secretObject {
-	return secretObject{
-		ContentType: "text/plain; charset=utf8",
-		Session:     session,
-		Value:       secretData,
-	}
 }
 
 // DefaultCollection returns the default collection path.
@@ -118,15 +114,19 @@ func Unlock(conn *dbus.Conn, objects []dbus.ObjectPath) ([]dbus.ObjectPath, erro
 }
 
 // CreateItem creates a new item in the given collection with the given secret.
-func CreateItem(conn *dbus.Conn, collection dbus.ObjectPath, applicationName string,
-	secretLabel string, secret secretObject) (
+func CreateItem(conn *dbus.Conn, collection dbus.ObjectPath, session dbus.ObjectPath, applicationName string,
+	secretLabel string, secretData []byte) (
 	dbus.BusObject, error) {
 	var item, prompt dbus.ObjectPath
 
 	if err := busObject(conn, collection).Call(createItemMethod, 0, map[string]dbus.Variant{
 		itemLabelVariant:      dbus.MakeVariant(secretLabel),
 		itemAttributesVariant: dbus.MakeVariant(attributes(applicationName)),
-	}, secret, true).Store(&item, &prompt); err != nil {
+	}, dbusSecretObject{
+		Session:     session,
+		Value:       secretData,
+		ContentType: "text/plain; charset=utf8",
+	}, true).Store(&item, &prompt); err != nil {
 		return nil, err
 	} else if prompt != dbus.ObjectPath("/") {
 		return nil, nil
@@ -149,11 +149,12 @@ func GetItem(conn *dbus.Conn, collection dbus.ObjectPath, session dbus.ObjectPat
 
 	if err := busObject(conn, collection).Call(searchItemsMethod, 0, attributes(applicationName)).Store(&items); err == nil {
 		if len(items) == 1 {
-			var secret secretObject
-			if err := busObject(conn, items[0]).Call(getSecretMethod, 0, session).Store(&secret); err != nil {
+			var dbusSecret dbusSecretObject
+			item := busObject(conn, items[0])
+			if err := item.Call(getSecretMethod, 0, session).Store(&dbusSecret); err != nil {
 				return nil, err
 			}
-			return &secret, nil
+			return &secretObject{item, &dbusSecret}, nil
 		} else if len(items) > 1 {
 			return nil, fmt.Errorf("%s returned %d items", searchItemsMethod, len(items))
 		} else {
