@@ -8,9 +8,9 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "kkru",
-	Short: "Keeper Keyring Utility",
-	Long:  `The Keeper keyring Utility manages secrets using the Linux keychain via the D-Bus Secrets API.`,
+	Use:   "lkru",
+	Short: "Linux Keyring Utility",
+	Long:  `The  Linux Keyring Utility manages secrets using the Linux keyring via the D-Bus Secrets API.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) == 0 {
 			cmd.Help()

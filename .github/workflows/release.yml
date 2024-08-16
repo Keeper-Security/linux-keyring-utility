@@ -24,7 +24,7 @@ jobs:
           GOARCH: amd64
           CGO_ENABLED: 0
         run: |
-          go build -o lku-${{ github.ref_name }}_linux_amd64
+          go build -o lkru-${{ github.ref_name }}_linux_amd64
 
       - name: Create checksums
         run: |
