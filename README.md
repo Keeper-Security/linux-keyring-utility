@@ -1,26 +1,28 @@
 # Keeper Security's Linux Keyring Utility
 
-A utility that stores and retrieves secrets from the Linux Keyring using the
+A utility that gets and sets _secrets_ in a Linux
+[Keyring](http://man7.org/linux/man-pages/man7/keyrings.7.html) using the
 [D-Bus](https://dbus.freedesktop.org/doc/dbus-tutorial.html)
 [Secret Service](https://specifications.freedesktop.org/secret-service/latest/).
 It tested with using
 [GNOME Keyring](https://wiki.gnome.org/Projects/GnomeKeyring/) and
-[KDE Walltet Manager](https://userbase.kde.org/KDE_Wallet_Manager).
+[KDE Wallet Manager](https://userbase.kde.org/KDE_Wallet_Manager).
 It _should_ work with any implementation of the D-Bus Secrets Service.
 
 It includes a simple get/set/del(ete) CLI implemented with
 [Cobra](https://cobra.dev).
 
-## Download
+## Usage
 
-A static binary is available via [Releases](releases).
+The Go Language API has offers `Get()`, `Set()` and `Delete()` methods.
+The first two accept and return `string` data.
 
-## Usage (API)
+### Go API
 
 The `secret_collection` API is a wrapper object for the function in the `dbus_secrets`.
 It unifies the D-Bus _Connection_, _Session_ and _Collection Service_ objects.
 
-### Example (get)
+#### Example (get)
 
 Complete `get` example:
 
@@ -45,7 +47,7 @@ func doit() {
 }
 ```
 
-### Example (set)
+#### Example (set)
 
 Set takes the data as a parameter and only returns an error
 
@@ -55,18 +57,19 @@ if err := collection.Set("myapp", "mysecret", "mysecretdata"); err == nil {
 }
 ```
 
-## Usage (CLI)
+### Binary Interface (CLI)
 
-The executable supports two subcommands:
+The Linux binary supports three subcommands:
 
-1. `set`
-2. `get`
+1. `get`
+2. `set`
+3. `del`
 
-Get requires one parameter; name, which is the secret _Label_ in D-Bus API terms.
+_Get_ and _del_ require one parameter; name, which is the secret _Label_ in D-Bus API terms.
 
-Set requires the name and the data as a string as the second parameter.
+_Set_ also requires the data as a string as the second parameter.
 
-### Example
+#### Example (get and set)
 
 ```shell
 # set has no output
