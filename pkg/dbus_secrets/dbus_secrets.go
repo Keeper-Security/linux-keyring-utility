@@ -119,7 +119,13 @@ func CreateItem(conn *dbus.Conn, collection dbus.ObjectPath, session dbus.Object
 	secretLabel string, secretData []byte) (
 	dbus.BusObject, error) {
 	var item, prompt dbus.ObjectPath
+	var replace bool
 
+	if _, err := GetItem(conn, collection, session, applicationName, secretLabel); err == nil {
+		replace = true
+	} else {
+		replace = false
+	}
 	if err := busObject(conn, collection).Call(createItemMethod, 0, map[string]dbus.Variant{
 		itemLabelVariant:      dbus.MakeVariant(secretLabel),
 		itemAttributesVariant: dbus.MakeVariant(attributes(applicationName, secretLabel)),
@@ -127,7 +133,7 @@ func CreateItem(conn *dbus.Conn, collection dbus.ObjectPath, session dbus.Object
 		Session:     session,
 		Value:       secretData,
 		ContentType: "text/plain; charset=utf8",
-	}, true).Store(&item, &prompt); err != nil {
+	}, replace).Store(&item, &prompt); err != nil {
 		return nil, err
 	} else if prompt != dbus.ObjectPath("/") {
 		return nil, nil
