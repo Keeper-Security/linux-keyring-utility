@@ -6,11 +6,11 @@ import (
 
 const (
 	testApplication = "test-app"
-	testCollection  = "kdewallet"
+	testCollection  = "login"
 	testData        = "one thing"
-	testData2	   = "versus another"
+	testData2       = "versus another"
 	testLabel       = "arbitrary-text"
-	testLabel2	  = "intentionally-different"
+	testLabel2      = "intentionally-different"
 )
 
 // TestNamedCollection tests the NamedCollection function.
