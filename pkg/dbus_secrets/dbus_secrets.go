@@ -7,6 +7,7 @@ import (
 )
 
 const (
+	StringContentType     = "text/plain; charset=utf8"
 	applicationName       = "Keeper Keyring Utility"
 	completedSignal       = "org.freedesktop.Secret.Prompt.Completed"
 	createItemMethod      = "org.freedesktop.Secret.Collection.CreateItem"
@@ -115,9 +116,9 @@ func Unlock(conn *dbus.Conn, objects []dbus.ObjectPath) ([]dbus.ObjectPath, erro
 	return unlocked, nil
 }
 
-// CreateItem creates a new item in the given collection with the given secret.
+// CreateItem creates a new item (or overwrites an existing one) in the given collection with the given secret.
 func CreateItem(conn *dbus.Conn, collection dbus.ObjectPath, session dbus.ObjectPath, applicationName string,
-	secretLabel string, secretData []byte) (
+	secretLabel string, secretData []byte, encoding string) (
 	dbus.BusObject, error) {
 	var item, prompt dbus.ObjectPath
 	var replace bool
@@ -133,7 +134,7 @@ func CreateItem(conn *dbus.Conn, collection dbus.ObjectPath, session dbus.Object
 	}, dbusSecretObject{
 		Session:     session,
 		Value:       secretData,
-		ContentType: "text/plain; charset=utf8",
+		ContentType: encoding,
 	}, replace).Store(&item, &prompt); err != nil {
 		return nil, err
 	} else if prompt != dbus.ObjectPath("/") {
