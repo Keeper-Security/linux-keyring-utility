@@ -63,7 +63,7 @@ func (sc *SecretCollection) Get(applicationName, label string) ([]byte, error) {
 
 // Set stores a secret in the collection
 func (sc *SecretCollection) Set(applicationName, label string, data []byte) error {
-	if _, err := secrets.CreateItem(sc.Conn, sc.Path, sc.Session, applicationName, label, data); err != nil {
+	if _, err := secrets.SetItem(sc.Conn, sc.Path, sc.Session, applicationName, label, data, secrets.StringContentType); err != nil {
 		return fmt.Errorf("Unable to create secret in collection '%s' for application '%s' with label '%s': %v", sc.Path, applicationName, label, err)
 	} else {
 		return nil

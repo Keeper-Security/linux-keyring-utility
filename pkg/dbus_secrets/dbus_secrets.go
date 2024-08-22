@@ -116,13 +116,14 @@ func Unlock(conn *dbus.Conn, objects []dbus.ObjectPath) ([]dbus.ObjectPath, erro
 	return unlocked, nil
 }
 
-// CreateItem creates a new item (or overwrites an existing one) in the given collection with the given secret.
-func CreateItem(conn *dbus.Conn, collection dbus.ObjectPath, session dbus.ObjectPath, applicationName string,
+// SetItem creates a new item (or overwrites an existing one) in the given collection with the given secret.
+func SetItem(conn *dbus.Conn, collection dbus.ObjectPath, session dbus.ObjectPath, applicationName string,
 	secretLabel string, secretData []byte, encoding string) (
 	dbus.BusObject, error) {
 	var item, prompt dbus.ObjectPath
 	var replace bool
 
+	// The D-Bus Secrets API will delete something else when replace is true but the item does not exist(!!).
 	if _, err := GetItem(conn, collection, session, applicationName, secretLabel); err == nil {
 		replace = true
 	} else {
