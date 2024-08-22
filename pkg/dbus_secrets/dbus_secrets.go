@@ -20,6 +20,7 @@ const (
 	searchItemsMethod     = "org.freedesktop.Secret.Collection.SearchItems"
 	serviceName           = "org.freedesktop.secrets"
 	servicePath           = "/org/freedesktop/secrets"
+	sessionCloseMethod    = "org.freedesktop.Secret.Session.Close"
 	unlockMethod          = "org.freedesktop.Secret.Service.Unlock"
 )
 
@@ -74,7 +75,7 @@ func Open(conn *dbus.Conn) (dbus.ObjectPath, error) {
 
 // Close closes the session with the secret service.
 func Close(conn *dbus.Conn, session dbus.ObjectPath) error {
-	return busObject(conn, session).Call("org.freedesktop.Secret.Session.Close", 0).Err
+	return busObject(conn, session).Call(sessionCloseMethod, 0).Err
 }
 
 // Unlock unlocks the given objects.
