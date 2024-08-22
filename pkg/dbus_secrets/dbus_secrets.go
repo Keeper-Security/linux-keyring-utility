@@ -37,10 +37,11 @@ type secretObject struct {
 }
 
 // attributes returns a map of attributes to be attached to the secret.
-func attributes(application string) map[string]string {
+func attributes(application, id string) map[string]string {
 	return map[string]string{
-		"Agent":       "keeper-keyring-utility",
+		"Agent":       "kkru (Keeper Keyring Utility)",
 		"Application": application,
+		"Id":          id,
 	}
 }
 
@@ -121,7 +122,7 @@ func CreateItem(conn *dbus.Conn, collection dbus.ObjectPath, session dbus.Object
 
 	if err := busObject(conn, collection).Call(createItemMethod, 0, map[string]dbus.Variant{
 		itemLabelVariant:      dbus.MakeVariant(secretLabel),
-		itemAttributesVariant: dbus.MakeVariant(attributes(applicationName)),
+		itemAttributesVariant: dbus.MakeVariant(attributes(applicationName, secretLabel)),
 	}, dbusSecretObject{
 		Session:     session,
 		Value:       secretData,
@@ -147,7 +148,7 @@ func DeleteItem(conn *dbus.Conn, item dbus.BusObject) error {
 func GetItem(conn *dbus.Conn, collection dbus.ObjectPath, session dbus.ObjectPath, applicationName string, label string) (*secretObject, error) {
 	var items []dbus.ObjectPath
 
-	if err := busObject(conn, collection).Call(searchItemsMethod, 0, attributes(applicationName)).Store(&items); err == nil {
+	if err := busObject(conn, collection).Call(searchItemsMethod, 0, attributes(applicationName, label)).Store(&items); err == nil {
 		if len(items) == 1 {
 			var dbusSecret dbusSecretObject
 			item := busObject(conn, items[0])
