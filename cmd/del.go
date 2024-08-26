@@ -9,8 +9,8 @@ import (
 )
 
 var delCmd = &cobra.Command{
-	Use:   "del",
-	Args:  cobra.ExactArgs(1),
+	Use:   "del [flags] <label> [label...]",
+	Args:  cobra.MinimumNArgs(1),
 	Short: "Delete a secret from the Linux keyring.",
 	Long:  `Delete a secret from the Linux keyring by it's label.`,
 	Run: func(cmd *cobra.Command, args []string) {

@@ -9,7 +9,7 @@ import (
 )
 
 var setCmd = &cobra.Command{
-	Use:   "set",
+	Use:   "set [flags] <label> <secret string>",
 	Args:  cobra.ExactArgs(2),
 	Short: "Set a secret in the Linux keyring.",
 	Long:  `Set the input string as a secret in the Linux keyring with the corresponding label.`,

@@ -8,9 +8,13 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "lkru",
-	Short: "Linux Keyring Utility",
-	Long:  `The  Linux Keyring Utility manages secrets using the Linux keyring via the D-Bus Secrets API.`,
+	Use:   "lkru [flags] <get|set|del>",
+	Short: "Linux Keyring Utility (lkru)",
+	Long: `lkru is a Linux Keyring Utility.
+It manages secrets in a Linux Keyring using the collection interface of the D-Bus Secrets API.
+It has a trivial set, get, and delete interface where set always creates and overwrites.
+There is no list or search functionality.
+`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) == 0 {
 			cmd.Help()

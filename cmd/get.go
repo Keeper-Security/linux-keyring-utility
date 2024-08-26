@@ -9,10 +9,10 @@ import (
 )
 
 var getCmd = &cobra.Command{
-	Use:   "get",
+	Use:   "get [flags] <label>",
 	Args:  cobra.ExactArgs(1),
-	Short: "Gets a secret from the Linux keyring.",
-	Long:  `Get a secret from the Linux keyring by it's label and return the value as a string.`,
+	Short: "Get a secret from the Linux Keyring.",
+	Long: `Get a secret from the Linux Keyring by it's label and print the value.
 	Run: func(cmd *cobra.Command, args []string) {
 		collection, err := secrets.DefaultCollection()
 		if err != nil {
