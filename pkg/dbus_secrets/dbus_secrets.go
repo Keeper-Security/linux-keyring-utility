@@ -8,7 +8,6 @@ import (
 
 const (
 	StringContentType     = "text/plain; charset=utf8"
-	applicationName       = "Keeper Keyring Utility"
 	completedSignal       = "org.freedesktop.Secret.Prompt.Completed"
 	createItemMethod      = "org.freedesktop.Secret.Collection.CreateItem"
 	defaultCollectionPath = "/org/freedesktop/secrets/aliases/default"

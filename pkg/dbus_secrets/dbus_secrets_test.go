@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	testApplicationName = "tests"
+	testApplicationName = "dbus_secrets_test"
 	testSecretData      = "ewogICAgInVzZXJuYW1lIjogImNhcHRhaW5fdW5kZXJwYW50cyIsCiAgICAicGFzc3dvcmQiOiAiWWFtMXczdD8hIgp9Cg=="
 	testSecretData2     = "ewogICJ1c2VybmFtZSI6ICJndW1uYmFsbCIsCiAgInBhc3N3b3JkIjogIkxVTkNIQk9YMSEhIgp9Cg=="
 	testSecretLabel     = "test-secret"

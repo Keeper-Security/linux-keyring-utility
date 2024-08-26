@@ -14,7 +14,7 @@ var delCmd = &cobra.Command{
 	Short: "Delete a secret from the Linux keyring.",
 	Long:  `Delete a secret from the Linux keyring by it's label.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		collection, err := secrets.DefaultCollection()
+		collection, err := secrets.Collection(collection)
 		if err != nil {
 			fmt.Fprintf(cmd.ErrOrStderr(), "Unable to get the default keyring: %v\n", err)
 			os.Exit(1)
@@ -23,7 +23,7 @@ var delCmd = &cobra.Command{
 			fmt.Fprintf(cmd.ErrOrStderr(), "Error unlocking the keyring: %v\n", err)
 			os.Exit(1)
 		} else {
-			if err := collection.Delete(rootCmd.Name(), args[0]); err != nil {
+			if err := collection.Delete(application, args[0]); err != nil {
 				fmt.Fprintf(cmd.ErrOrStderr(), "Unable to delete secret '%s': %v\n", args[0], err)
 				os.Exit(1)
 			}

@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	testApplication = "test-app"
+	testApplication = "secret_collection_test"
 	testCollection  = "login"
 	testData        = "one thing"
 	testData2       = "versus another"
@@ -72,7 +72,6 @@ func TestSecretCollection_Set(t *testing.T) {
 	}
 }
 
-
 func TestSecretCollection_Delete(t *testing.T) {
 	if collection, err := Collection(testCollection); err != nil {
 		t.Fatalf("Expected no error but got: %v", err)
@@ -114,22 +113,26 @@ func TestSecretCollection_WithTwoItems(t *testing.T) {
 			t.Fatalf("Expected no error but got: %v", err)
 		}
 		if err := collection.Set(testApplication, testLabel2, []byte(testData2)); err != nil {
-			
+
 			t.Fatalf("Expected no error but got: %v", err)
 		}
 
 		if item, err := collection.Get(testApplication, testLabel); err != nil {
 			t.Fatalf("Expected no error but got: %v", err)
+		} else {
 			if string(item) != testData {
 				t.Fatalf("Expected %s but got %s", testData, string(item))
 			}
+			collection.Delete(testApplication, testLabel)
 		}
 
 		if item, err := collection.Get(testApplication, testLabel2); err != nil {
 			t.Fatalf("Expected no error but got: %v", err)
+		} else {
 			if string(item) != testData2 {
 				t.Fatalf("Expected %s but got %s", testData2, string(item))
 			}
+			collection.Delete(testApplication, testLabel2)
 		}
 	}
 }

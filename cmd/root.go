@@ -7,6 +7,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var application = "lkru"
+var collection = "login"
+
 var rootCmd = &cobra.Command{
 	Use:   "lkru [flags] <get|set|del>",
 	Short: "Linux Keyring Utility (lkru)",
@@ -31,6 +34,8 @@ func Execute() {
 }
 
 func init() {
+	rootCmd.PersistentFlags().StringVarP(&application, "application", "a", application, "The application name to use.")
+	rootCmd.PersistentFlags().StringVarP(&collection, "collection", "c", collection, "The collection name to use.")
 	rootCmd.AddCommand(setCmd)
 	rootCmd.AddCommand(getCmd)
 	rootCmd.AddCommand(delCmd)
