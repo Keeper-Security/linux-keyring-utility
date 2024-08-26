@@ -9,6 +9,7 @@ import (
 
 var application = "lkru"
 var collection = "login"
+var use_base64 = false
 
 var rootCmd = &cobra.Command{
 	Use:   "lkru [flags] <get|set|del>",
@@ -36,6 +37,8 @@ func Execute() {
 func init() {
 	rootCmd.PersistentFlags().StringVarP(&application, "application", "a", application, "The application name to use.")
 	rootCmd.PersistentFlags().StringVarP(&collection, "collection", "c", collection, "The collection name to use.")
+	getCmd.Flags().BoolVarP(&use_base64, "base64", "b", false, "Decode the secret from base64 before printing.")
+	setCmd.Flags().BoolVarP(&use_base64, "base64", "b", false, "Encode the secret as base64 before storing.")
 	rootCmd.AddCommand(setCmd)
 	rootCmd.AddCommand(getCmd)
 	rootCmd.AddCommand(delCmd)

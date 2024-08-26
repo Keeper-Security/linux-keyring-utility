@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"encoding/base64"
 	"fmt"
 	"os"
 
@@ -13,6 +14,8 @@ var getCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	Short: "Get a secret from the Linux Keyring.",
 	Long: `Get a secret from the Linux Keyring by it's label and print the value.
+Use -b or --base64 to decode the secret from base64 automatically before printing.
+`,
 	Run: func(cmd *cobra.Command, args []string) {
 		collection, err := secrets.Collection(collection)
 		if err != nil {
@@ -27,6 +30,13 @@ var getCmd = &cobra.Command{
 				fmt.Fprintf(cmd.ErrOrStderr(), "Unable to get secret '%s': %v\n", args[0], err)
 				os.Exit(1)
 			} else {
+				if use_base64 {
+					secret, err = base64.StdEncoding.DecodeString(string(secret))
+					if err != nil {
+						fmt.Fprintf(cmd.ErrOrStderr(), "Unable to decode base64 secret '%s': %v\n", args[0], err)
+						os.Exit(1)
+					}
+				}
 				fmt.Println(string(secret))
 			}
 		}
