@@ -23,6 +23,24 @@ Use -b or --base64 to encode the secret as base64 automatically before storing.
 			os.Exit(1)
 		}
 		if err := collection.Unlock(); err == nil {
+			if len(args) == 2 && args[1] == "-" {
+				scanner := bufio.NewScanner(os.Stdin)
+
+				var lines []string
+				for {
+					scanner.Scan()
+					line := scanner.Text()
+					if len(line) == 0 {
+						break
+					}
+					lines = append(lines, line)
+				}
+				if err := scanner.Err(); err != nil {
+					fmt.Fprintf(cmd.ErrOrStderr(), "Unable to read the secret '%s' from standard input: %v\n", args[0], err)
+					os.Exit(1)
+				}
+				args[1] = strings.Join(lines, "\n")
+			}
 			if use_base64 {
 				args[1] = base64.StdEncoding.EncodeToString([]byte(args[1]))
 			}
