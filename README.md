@@ -1,6 +1,6 @@
 # Linux Keyring Utility
 
-This utility interacts with the native Linux APIs to store and retrieve secrets from the Keyring using [Secret Service](https://specifications.freedesktop.org/secret-service/latest/). It can be used by any integration, plugin, or code base to store and retrieve credentials, secrets, and passwords in the Linux Keyring simply and natively.
+This utility interacts with the native Linux APIs to store and retrieve secrets from the Keyring using [Secret Service](https://specifications.freedesktop.org/secret-service/latest/). It can be used by any integration, plugin, or code base to store and retrieve credentials, secrets, and passwords in any Linux Keyring simply and natively.
 
 To use this utility, you can deploy the pre-built binary from the releases page, or by importing it into your code base. Both use cases are covered below.
 
@@ -21,17 +21,19 @@ It _should_ work with any implementation of the D-Bus Secrets Service.
 It includes a simple get/set/del(ete) CLI implemented with
 [Cobra](https://cobra.dev).
 
+### Interface
+
+There are two packages, `dbus_secrets` and `secret_collection`.
+The `secret_collection` object uses the functions in `dbus_secrets`.
+It unifies the D-Bus _Connection_, _Session_ and _Collection Service_ objects.
+It offers the simple get/set/delete interface that the CLI uses.
+
 ## Usage
 
 The Go Language API has offers `Get()`, `Set()` and `Delete()` methods.
 The first two accept and return `string` data.
 
-### Go API
-
-The `secret_collection` API is a wrapper object for the function in the `dbus_secrets`.
-It unifies the D-Bus _Connection_, _Session_ and _Collection Service_ objects.
-
-#### Example (get)
+### Example (get)
 
 ```go
 package main
@@ -61,7 +63,7 @@ Most Linux Keyring interfaces allow the user to set it.
 
 The `.NamedCollection(string)` method provides access to collections by name.
 
-#### Example (set)
+### Example (set)
 
 Set takes the data as a parameter and only returns an error.
 
@@ -73,7 +75,7 @@ if err := collection.Set("myapp", "mysecret", "mysecretdata"); err == nil {
 
 Set accepts _any_ string as secret data.
 
-### Binary Interface (CLI)
+## Binary Interface (CLI)
 
 The Linux binary supports three subcommands:
 
@@ -90,14 +92,14 @@ _Set_ also requires the data as a _single_ string in the second parameter.
 For example, `set foo bar baz` will generate an error but `set foo 'bar baz'` will work.
 If the string is `-` then the string is read from standard input.
 
-#### Base64 encoding
+### Base64 encoding
 
 _Get_ and _set_ take a `-b` or `--base64` flag that handles base64 automatically.
 If used, _Set_ will encode the input before storing it and/or _get_ will decode it before printing.
 
 Note that calling `get -b` on a secret that is _not_ base64 encoded secret will generate an error.
 
-### CLI Examples
+### Examples
 
 ```shell
 # set has no output
@@ -123,9 +125,15 @@ ewogICJ1c2VybmFtZSI6ICJhZGFtIiwKICAicGFzc3dvcmQiOiAicGFzc3dvcmQxMjMuIgp9
 lkru get root_cred4 2>/dev/null
 lkru get root_cred4
 Unable to get secret 'root_cred4': Unable to retrieve secret 'root_cred4' for application 'lkru' from collection '/org/freedesktop/secrets/aliases/default': org.freedesktop.Secret.Collection.SearchItems returned nothing
-# most errors are obvious
+# a missing wallet error
 lkru -c missing_wallet get root_cred
 Error unlocking the keyring: Unable to unlock collection '/org/freedesktop/secrets/collection/missing_wallet': Object /org/freedesktop/secrets/collection/missing_wallet does not exist
+# this error happens when there is no D-Bus running
+lkru get test_cred
+Unable to get the default keyring: Unable to connect to the D-Bus Session Bus: exec: "dbus-launch": executable file not found in $PATH
+# this happens when D-Bus has no Secrets Service, i.e., there are no Keyring(s)
+lkru get test_cred
+Unable to get the default keyring: Unable to open a D-Bus session: The name org.freedesktop.secrets was not provided by any .service files
 ```
 
 ## Contributing
