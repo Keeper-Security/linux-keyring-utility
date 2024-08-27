@@ -1,9 +1,11 @@
 package cmd
 
 import (
+	"bufio"
 	"encoding/base64"
 	"fmt"
 	"os"
+	"strings"
 
 	secrets "github.com/Keeper-Security/linux-keyring-utility/pkg/secret_collection"
 	"github.com/spf13/cobra"
