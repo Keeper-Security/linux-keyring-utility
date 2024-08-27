@@ -1,10 +1,19 @@
-# Keeper Security's Linux Keyring Utility
+# Keeper Security Linux Keyring Utility
 
-A utility that gets and sets _secrets_ in a Linux
+This utility interacts with the native Linux APIs to store and retrieve secrets from the Keyring using [Secret Service](https://specifications.freedesktop.org/secret-service/latest/). It can be used by any integration, plugin, or code base to store and retrieve credentials, secrets, and passwords in the Linux Keyring simply and natively.
+
+To use this utility, you can deploy the pre-built binary from the releases page, or by importing it into your code base. Both use cases are covered below.
+
+For Windows implementations, see the [Windows Credential Utility](https://github.com/Keeper-Security/windows-credential-utility).
+
+## Details
+
+The Linux Keyring Utility gets and sets _secrets_ in a Linux
 [Keyring](http://man7.org/linux/man-pages/man7/keyrings.7.html) using the
 [D-Bus](https://dbus.freedesktop.org/doc/dbus-tutorial.html)
 [Secret Service](https://specifications.freedesktop.org/secret-service/latest/).
-It tested with using
+
+It has been tested with
 [GNOME Keyring](https://wiki.gnome.org/Projects/GnomeKeyring/) and
 [KDE Wallet Manager](https://userbase.kde.org/KDE_Wallet_Manager).
 It _should_ work with any implementation of the D-Bus Secrets Service.
