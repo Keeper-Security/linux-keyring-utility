@@ -40,7 +40,7 @@ type secretObject struct {
 // attributes returns a map of attributes to be attached to the secret.
 func attributes(application, id string) map[string]string {
 	return map[string]string{
-		"Agent":       "kkru (Keeper Keyring Utility)",
+		"Agent":       "lkru (Linux Keyring Utility)",
 		"Application": application,
 		"Id":          id,
 	}
