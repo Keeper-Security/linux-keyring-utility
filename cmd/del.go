@@ -10,6 +10,7 @@ import (
 
 var delCmd = &cobra.Command{
 	Use:   "del [flags] <label> [label...]",
+	Aliases: []string{"delete"},
 	Args:  cobra.MinimumNArgs(1),
 	Short: "Delete secret(s) from the Linux keyring.",
 	Long:  `Delete one or more secrets from the Linux keyring by label.`,
