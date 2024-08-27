@@ -16,8 +16,15 @@ var rootCmd = &cobra.Command{
 	Short: "Linux Keyring Utility (lkru)",
 	Long: `lkru is a Linux Keyring Utility.
 It manages secrets in a Linux Keyring using the collection interface of the D-Bus Secrets API.
-It has a trivial set, get, and delete interface where set always creates and overwrites.
+It has a trivial set, get, and delete interface where set creates and always overwrites.
 There is no list or search functionality.
+
+It sets attributes on the secret to facilitate namespacing.
+The application name is an attribute on the secret.
+There is an agent attribute containing 'lkru (Linux Keyring Utility)'.
+And the label becomes the _id_ attribute on the secret.
+
+The default application name is 'lkru' and the default collection is 'login'.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) == 0 {
