@@ -24,8 +24,6 @@ It unifies the D-Bus _Connection_, _Session_ and _Collection Service_ objects.
 
 #### Example (get)
 
-Complete `get` example:
-
 ```go
 package main
 
@@ -47,15 +45,24 @@ func doit() {
 }
 ```
 
+The `.DefaultCollection()` returns whatever collection the _default_ _alias_ refers to.
+It will generate an error if the _default_ alias is not set.
+It usually points to the _login_ keyring.
+Most Linux Keyring interfaces allow the user to set it.
+
+The `.NamedCollection(string)` method provides access to collections by name.
+
 #### Example (set)
 
-Set takes the data as a parameter and only returns an error
+Set takes the data as a parameter and only returns an error.
 
 ```go
 if err := collection.Set("myapp", "mysecret", "mysecretdata"); err == nil {
     // success
 }
 ```
+
+Set accepts _any_ string as secret data.
 
 ### Binary Interface (CLI)
 
@@ -67,7 +74,11 @@ The Linux binary supports three subcommands:
 
 _Get_ and _del_ require one parameter; name, which is the secret _Label_ in D-Bus API terms.
 
-_Set_ also requires the data as a string as the second parameter.
+_Del_ accepts one or more secret labels and deletes all of them.
+If it generates an error it will stop.
+
+_Set_ also requires the data as a _single_ string in the second parameter.
+For example, `set foo bar baz` will generate an error but `set foo 'bar baz'` will work.
 If the string is `-` then the string is read from standard input.
 
 #### Base64 encoding
@@ -91,7 +102,7 @@ lku get root_cred
     "username": "root"
     "password": "rand0m."
 }
-lkru set -b root_cred2 $(echo '{"username": "gollum", "password": "MyPrecious"}')
+lkru set -b root_cred2 '{"username": "gollum", "password": "MyPrecious"}'
 lkru get root_cred2
 eyJ1c2VybmFtZSI6ICJnb2xsdW0iLCAicGFzc3dvcmQiOiAiTXlQcmVjaW91cyJ9
 lkru get -b root_cred2
