@@ -1,4 +1,4 @@
-# Keeper Security Linux Keyring Utility
+# Linux Keyring Utility
 
 This utility interacts with the native Linux APIs to store and retrieve secrets from the Keyring using [Secret Service](https://specifications.freedesktop.org/secret-service/latest/). It can be used by any integration, plugin, or code base to store and retrieve credentials, secrets, and passwords in the Linux Keyring simply and natively.
 
