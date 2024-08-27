@@ -68,6 +68,7 @@ The Linux binary supports three subcommands:
 _Get_ and _del_ require one parameter; name, which is the secret _Label_ in D-Bus API terms.
 
 _Set_ also requires the data as a string as the second parameter.
+If the string is `-` then the string is read from standard input.
 
 #### Base64 encoding
 
@@ -95,10 +96,13 @@ lkru get root_cred2
 eyJ1c2VybmFtZSI6ICJnb2xsdW0iLCAicGFzc3dvcmQiOiAiTXlQcmVjaW91cyJ9
 lkru get -b root_cred2
 {"username": "gollum", "password": "MyPrecious"}
-# errors go to stderr
-lkru get root_cred3 2>/dev/null
+cat ./good_cred.json | lkru set -b root_cred3 -
 lkru get root_cred3
-Unable to get secret 'root_cred3': Unable to retrieve secret 'root_cred3' for application 'lkru' from collection '/org/freedesktop/secrets/aliases/default': org.freedesktop.Secret.Collection.SearchItems returned nothing
+ewogICJ1c2VybmFtZSI6ICJhZGFtIiwKICAicGFzc3dvcmQiOiAicGFzc3dvcmQxMjMuIgp9
+# errors go to stderr
+lkru get root_cred4 2>/dev/null
+lkru get root_cred4
+Unable to get secret 'root_cred4': Unable to retrieve secret 'root_cred4' for application 'lkru' from collection '/org/freedesktop/secrets/aliases/default': org.freedesktop.Secret.Collection.SearchItems returned nothing
 # most errors are obvious
 lkru -c missing_wallet get root_cred
 Error unlocking the keyring: Unable to unlock collection '/org/freedesktop/secrets/collection/missing_wallet': Object /org/freedesktop/secrets/collection/missing_wallet does not exist
