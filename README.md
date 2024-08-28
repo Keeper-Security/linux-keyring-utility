@@ -1,6 +1,7 @@
 # Linux Keyring Utility
 
-This utility interacts with the native Linux APIs to store and retrieve secrets from the Keyring using [Secret Service](https://specifications.freedesktop.org/secret-service/latest/). It can be used by any integration, plugin, or code base to store and retrieve credentials, secrets, and passwords in any Linux Keyring simply and natively.
+This utility interacts with the native Linux APIs to store and retrieve secrets from the Keyring using [Secret Service](https://specifications.freedesktop.org/secret-service/latest/).
+It can be used by any integration, plugin, or code base to store and retrieve credentials, secrets, and passwords in any Linux Keyring simply and natively.
 
 To use this utility, you can deploy the pre-built binary from the releases page, or by importing it into your code base. Both use cases are covered below.
 
@@ -18,15 +19,11 @@ It has been tested with
 [KDE Wallet Manager](https://userbase.kde.org/KDE_Wallet_Manager).
 It _should_ work with any implementation of the D-Bus Secrets Service.
 
-It includes a simple get/set/del(ete) CLI implemented with
-[Cobra](https://cobra.dev).
-
 ### Interface
 
 There are two packages, `dbus_secrets` and `secret_collection`.
 The `secret_collection` object uses the functions in `dbus_secrets`.
-It unifies the D-Bus _Connection_, _Session_ and _Collection Service_ objects.
-It offers the simple get/set/delete interface that the CLI uses.
+It unifies the D-Bus _Connection_, _Session_ and _Collection Service_ objects to offer a simple get/set/delete interface that the CLI uses.
 
 ## Usage
 
@@ -65,15 +62,14 @@ The `.NamedCollection(string)` method provides access to collections by name.
 
 ### Example (set)
 
-Set takes the data as a parameter and only returns an error.
+Set takes the data as a parameter and only returns an error or `nil` on success.
+It does not restrict the content or length of the secret data.
 
 ```go
 if err := collection.Set("myapp", "mysecret", "mysecretdata"); err == nil {
     // success
 }
 ```
-
-Set accepts _any_ string as secret data.
 
 ## Binary Interface (CLI)
 
@@ -121,19 +117,46 @@ lkru get -b root_cred2
 cat ./good_cred.json | lkru set -b root_cred3 -
 lkru get root_cred3
 ewogICJ1c2VybmFtZSI6ICJhZGFtIiwKICAicGFzc3dvcmQiOiAicGFzc3dvcmQxMjMuIgp9
-# errors go to stderr
-lkru get root_cred4 2>/dev/null
-lkru get root_cred4
-Unable to get secret 'root_cred4': Unable to retrieve secret 'root_cred4' for application 'lkru' from collection '/org/freedesktop/secrets/aliases/default': org.freedesktop.Secret.Collection.SearchItems returned nothing
-# a missing wallet error
-lkru -c missing_wallet get root_cred
-Error unlocking the keyring: Unable to unlock collection '/org/freedesktop/secrets/collection/missing_wallet': Object /org/freedesktop/secrets/collection/missing_wallet does not exist
-# this error happens when there is no D-Bus running
-lkru get test_cred
-Unable to get the default keyring: Unable to connect to the D-Bus Session Bus: exec: "dbus-launch": executable file not found in $PATH
-# this happens when D-Bus has no Secrets Service, i.e., there are no Keyring(s)
-lkru get test_cred
+```
+
+### Errors
+
+Error output goes to `stderr` so adding `2>/dev/null` to the end of a command will suppress it.
+
+#### No keyring
+
+The login collection does not exist because the keyring does not exist.
+KDE may create _kdewallet_ instead of _login_ like GNOME.
+
+```shell
+Unable to get secret 'test_cred': Unable to retrieve secret 'test_cred' for application 'lkru' from collection '/org/freedesktop/secrets/collection/login': Object does not exist at path “/org/freedesktop/secrets/collection/login”
+```
+
+#### No matching secret
+
+A secret may not be returned even though a secret with the same label exists.
+If the secret was not created with lkru, it may not have the same [attributes](/Keeper-Security/linux-keyring-utility/blob/main/pkg/dbus_secrets/dbus_secrets.go#L41). Namely 'Agent', 'Application', and 'Id'.
+
+```shell
+Unable to get secret 'test_cred': Unable to retrieve secret 'test_cred' for application 'lkru' from collection '/org/freedesktop/secrets/aliases/default': org.freedesktop.Secret.Collection.SearchItems returned nothing
+```
+
+#### No D-Bus Session
+
+There may not be a D-Bus Session to host the Secret Service.
+This happens when the user is not logged into the GUI.
+
+```shell
 Unable to get the default keyring: Unable to open a D-Bus session: The name org.freedesktop.secrets was not provided by any .service files
+```
+
+#### No D-Bus
+
+The system may not host D-Bus.
+Several lightweight linux distributions ship without it by default.
+
+```shell
+Unable to get the default keyring: Unable to connect to the D-Bus Session Bus: exec: "dbus-launch": executable file not found in $PATH
 ```
 
 ## Contributing
