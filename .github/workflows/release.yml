@@ -33,7 +33,7 @@ jobs:
         id: cgo-action
         uses: go-cross/cgo-actions@v1
         with:
-          flags: -ldflags='-X github.com/Keeper-Security/linux-keyring-utility/cmd.Version=$(git describe --tags --always) -buildmode=pie'
+          flags: -X github.com/Keeper-Security/linux-keyring-utility/cmd.Version=$(git describe --tags --always) -buildmode=pie
           targets: ${{ matrix.targets }}
           output: lkru-${{ github.ref_name }}_$target$ext
 
