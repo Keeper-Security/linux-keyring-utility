@@ -8,7 +8,7 @@ import (
 )
 
 var application = "lkru"
-var collection = "login"
+var collection = "default"
 var use_base64 = false
 
 var rootCmd = &cobra.Command{
