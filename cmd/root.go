@@ -49,4 +49,5 @@ func init() {
 	rootCmd.AddCommand(setCmd)
 	rootCmd.AddCommand(getCmd)
 	rootCmd.AddCommand(delCmd)
+	rootCmd.AddCommand(versionCmd)
 }
