@@ -77,15 +77,18 @@ The Linux binary supports three subcommands:
 1. `get`
 2. `set`
 3. `del`
+4. `version`
 
 _Get_ and _del_ require one parameter; name, which is the secret _Label_ in D-Bus API terms.
 
-_Del_ accepts one or more secret labels and deletes all of them.
+_Del_ or _delete_ accepts one or more secret labels and deletes all of them.
 It will stop on the first error condition it encounters.
 
 _Set_ requires the data as a _single_ string in the second parameter.
 For example, `set foo bar baz` will generate an error but `set foo 'bar baz'` will work.
 If the string is `-` then the string is read from standard input.
+
+_Version_ prints the version and exits with status 0.
 
 ### Base64 encoding
 
