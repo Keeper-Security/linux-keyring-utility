@@ -55,7 +55,6 @@ func doit() {
 
 The `.DefaultCollection()` returns whatever collection the _default_ _alias_ refers to.
 It will generate an error if the _default_ alias is not set.
-It usually points to the _login_ keyring.
 Most Linux Keyring interfaces allow the user to set it.
 
 The `.NamedCollection(string)` method provides access to collections by name.
@@ -82,9 +81,9 @@ The Linux binary supports three subcommands:
 _Get_ and _del_ require one parameter; name, which is the secret _Label_ in D-Bus API terms.
 
 _Del_ accepts one or more secret labels and deletes all of them.
-If it generates an error it will stop.
+It will stop on the first error condition it encounters.
 
-_Set_ also requires the data as a _single_ string in the second parameter.
+_Set_ requires the data as a _single_ string in the second parameter.
 For example, `set foo bar baz` will generate an error but `set foo 'bar baz'` will work.
 If the string is `-` then the string is read from standard input.
 
@@ -125,11 +124,12 @@ Error output goes to `stderr` so adding `2>/dev/null` to the end of a command wi
 
 #### No keyring
 
-The login collection does not exist because the keyring does not exist.
-KDE may create _kdewallet_ instead of _login_ like GNOME.
+The default alias does not point to a collection.
+It might not exist or there may not be a default.
+Use KDE Wallet Manager or GNOME Seahorse to create a collection and/or it as default.
 
 ```shell
-Unable to get secret 'test_cred': Unable to retrieve secret 'test_cred' for application 'lkru' from collection '/org/freedesktop/secrets/collection/login': Object does not exist at path “/org/freedesktop/secrets/collection/login”
+Unable to get secret 'test_cred': Unable to retrieve secret 'test_cred' for application 'lkru' from collection '/org/freedesktop/secrets/aliases/default': Object does not exist at path “/org/freedesktop/secrets/aliases/default”
 ```
 
 #### No matching secret
@@ -141,9 +141,9 @@ If the secret was not created with lkru, it may not have the same [attributes](/
 Unable to get secret 'test_cred': Unable to retrieve secret 'test_cred' for application 'lkru' from collection '/org/freedesktop/secrets/aliases/default': org.freedesktop.Secret.Collection.SearchItems returned nothing
 ```
 
-#### No D-Bus Session
+#### No D-Bus Session Secret Service
 
-There may not be a D-Bus Session to host the Secret Service.
+There is no Secret Service registered on the D-Bus Session.
 This happens when the user is not logged into the GUI.
 
 ```shell
@@ -152,7 +152,7 @@ Unable to get the default keyring: Unable to open a D-Bus session: The name org.
 
 #### No D-Bus
 
-The system may not host D-Bus.
+The system is not running D-Bus.
 Several lightweight linux distributions ship without it by default.
 
 ```shell

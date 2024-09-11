@@ -12,8 +12,8 @@ import (
 var getCmd = &cobra.Command{
 	Use:   "get [flags] <label>",
 	Args:  cobra.ExactArgs(1),
-	Short: "Get a secret from the Linux Keyring.",
-	Long: `Get a secret from the Linux Keyring by it's label and print the value.
+	Short: "Get a secret from the Linux Keyring",
+	Long: `Get a secret from the Linux Keyring by label and print the value.
 Use -b or --base64 to decode the secret from base64 before printing.
 `,
 	Run: func(cmd *cobra.Command, args []string) {

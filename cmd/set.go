@@ -14,7 +14,7 @@ import (
 var setCmd = &cobra.Command{
 	Use:   "set [flags] <label> <secret string>",
 	Args:  cobra.ExactArgs(2),
-	Short: "Set a secret in the Linux keyring.",
+	Short: "Set a secret in the Linux keyring",
 	Long: `Set secret string as a secret in the Linux keyring with the corresponding label.
 If the secret string is "-", lkru reads it from standard input.
 Use -b or --base64 to encode the secret string as base64 before storing it.
